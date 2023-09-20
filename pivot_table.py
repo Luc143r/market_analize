@@ -1,4 +1,6 @@
 import win32com.client as win32
+import pandas as pd
+import numpy as np
 import sys
 import os
 import itertools
@@ -21,23 +23,34 @@ def pivot_table(wb: object, ws1: object, pt_ws: object, ws_name: str, pt_name: s
     """
 
     # pivot table location
-    pt_loc = len(pt_filters) + 2
-    
+    #pt_loc = len(pt_filters) + 2
+    #print(ws1.Range('C2'))
     # grab the pivot table source data
-    pc = wb.PivotCaches().Create(SourceType=win32c.xlDatabase, SourceData=ws1.UsedRange, Version=win32c.xlPivotTableVersion14)
+    pc = wb.PivotCaches().Create(SourceType=win32c.xlDatabase, SourceData="test.csv!R1C1:R4553C694", Version=win32c.xlPivotTableVersion14)
     # create the pivot table object
-    pc.CreatePivotTable(TableDestination=f'{ws_name}!R4C1', TableName=pt_name)
+    
+    pc.CreatePivotTable(TableDestination='pivot_table!R4C1', TableName=pt_name)
 
     # selecte the pivot table work sheet and location to create the pivot table
     pt_ws.Select()
-    pt_ws.Cells(pt_loc, 1).Select()
+    pt_ws.Cells(1, 1).Select()
 
     # Sets the rows, columns and filters of the pivot table
 
-    for field_list, field_r in ((pt_filters, win32c.xlPageField), (pt_rows, win32c.xlRowField), (pt_cols, win32c.xlColumnField)):
+    '''for field_list, field_r in ((pt_rows, win32c.xlRowField), (pt_cols, win32c.xlColumnField)):
         for i, value in enumerate(field_list):
+            print(f'{i}\n{value}')
             pt_ws.PivotTables(pt_name).PivotFields(value).Orientation = field_r
-            pt_ws.PivotTables(pt_name).PivotFields(value).Position = i + 1
+            pt_ws.PivotTables(pt_name).PivotFields(value).Position = i + 1'''
+
+    pt_ws.PivotTables(pt_name).PivotFields('sure_topic').Orientation = win32c.xlRowField
+    pt_ws.PivotTables(pt_name).PivotFields('sure_topic').Position = 1
+    pt_ws.PivotTables(pt_name).PivotFields('iterations_new').Orientation = win32c.xlColumnField
+    pt_ws.PivotTables(pt_name).PivotFields('iterations_new').Position = 1
+    '''pt_ws.PivotTables(pt_name).PivotFields('Есть ответ').Orientation = win32c.xlPageField
+    pt_ws.PivotTables(pt_name).PivotFields('Есть ответ').Position = 1
+    pt_ws.PivotTables(pt_name).PivotFields('Нет ответа').Orientation = win32c.xlPageField
+    pt_ws.PivotTables(pt_name).PivotFields('Нет ответа').Position = 1'''
 
     # Sets the Values of the pivot table
     for field in pt_fields:
@@ -56,14 +69,14 @@ def run_excel(f_path: Path, f_name: str):
     #path_file = os.path.abspath('result.xlsx')
     wb = excel.Workbooks.Open(filename)
     ws1 = wb.Sheets('test.csv')
-    ws2_name = 'pivot'
+    ws2_name = 'pivot_table'
     wb.Sheets.Add().Name = ws2_name
-    ws2 = wb.Sheets('pivot')
+    ws2 = wb.Sheets('pivot_table')
 
-    pt_name = 'example'
+    pt_name = 'pivot'
     pt_rows = ['sure_topic']
     pt_cols = ['iterations_new']
-    pt_filters = ['chat_id']
+    pt_filters = []
     pt_fields = [['Есть ответ', 'Есть ответ: sum', win32c.xlSum, '$#,##0.00'], 
                 ['Нет ответа', 'Нет ответа: sum', win32c.xlSum, '$#,##0.00']]
 

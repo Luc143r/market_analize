@@ -54,10 +54,10 @@ def fill_response():
     sheet = wb.active
     max_rows = sheet.max_row
     for i in range(2, max_rows):
-        result = np.where(sheet[f'G{i}'].value == None, 'Нет', 'Да')
+        result = np.where(sheet[f'G{i}'].value == None, '0', '1')
         sheet[f'H{i}'] = str(result)
     for i in range(2, max_rows):
-        result = np.where(sheet[f'G{i}'].value == None, 'Да', 'Нет') 
+        result = np.where(sheet[f'G{i}'].value == None, '1', '0') 
         sheet[f'I{i}'] = str(result)
     wb.save('result.xlsx')
     print('>>>"response" filled')
