@@ -1,7 +1,16 @@
 import pandas as pd
 import numpy as np
 from openpyxl import Workbook, load_workbook
+import win32com.client as win32
+import sys
+import os
+from pathlib import Path
+from pivot_table import run_excel
 
+
+win32c = win32.constants
+f_path = Path.cwd()
+f_name = 'result.xlsx'
 
 
 #######################################################
@@ -84,29 +93,4 @@ if __name__ == '__main__':
     insert_response_col()
     fill_response()
     moving_cols()
-
-
-
-
-
-#
-#Функции для дальнейшего построения сводной по реопенам
-#
-"""def insert_reopens_col():
-    wb = load_workbook('result.xlsx')
-    sheet = wb.active
-    sheet.insert_cols(12, 1)
-    sheet['L1'] = 'reopens'
-    wb.save('result.xlsx')
-    print('>>>added "reopens" col')
-
-
-def fill_reopens():
-    wb = load_workbook('result.xlsx')
-    sheet = wb.active
-    max_rows = sheet.max_row
-    for i in range(2, max_rows):
-        result = np.where(sheet[f'G{i}'].value == None, 'Нет', 'Да') #Формула - =IF(B2=1;1;IF(I2 = "";0;LEN(I2)- LEN(SUBSTITUTE(I2;",";""))+2)) НЕ ГОТОВА
-        sheet[f'H{i}'] = str(result)
-    wb.save('result.xlsx')
-    print('>>>"reopens" filled')"""
+    run_excel(f_path, f_name)
